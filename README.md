@@ -8,10 +8,6 @@ The playwright-markdown-timeline-reporter is a powerful library designed to conv
 
 - **Markdown Gantt chart generation**: The library processes Playwright test results to create Gantt charts in Markdown format. Each test case is represented by a bar on the timeline, indicating its commencement and completion times. Additionally, dependencies between test cases are illustrated via interconnected lines, making the test flow clearer.
 
-- **Customizable output**: The look of the generated Gantt charts can be fine-tuned to meet your unique requirements. Options include modifying aspects like color schemes, font styles, and bar heights to create visually appealing outputs.
-
-- **Test results filtering and sorting**: The library provides the flexibility to filter and sort test results based on specific criteria. This feature enables you to concentrate on critical information and to prioritize test cases as per your needs.
-
 ## Usage
 
 1. Install the playwright-markdown-timeline-reporter library:
