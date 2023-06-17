@@ -1,6 +1,6 @@
 # playwright-markdown-timeline-reporter
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
 
 The playwright-markdown-timeline-reporter is a powerful library designed to convert Playwright test results into visually intuitive Markdown Gantt charts. It transforms test progression and dependencies into easy-to-read graphical timelines, thus promoting more effective analysis and understanding.
 
@@ -77,4 +77,4 @@ gantt
 
 ## License
 
-The playwright-markdown-timeline-reporter project is under the MIT License. For more details, refer to the [LICENSE](/LICENSE) file.
+The playwright-markdown-timeline-reporter project is under the MIT License. For more details, refer to the [LICENSE](/LICENSE.md) file.
