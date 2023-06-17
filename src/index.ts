@@ -1,64 +1,91 @@
 import { FullConfig, FullResult, Reporter, Suite, TestCase, TestResult } from '@playwright/test/reporter';
+import { BrowserContext } from '@playwright/test/types/test';
 import * as fs from 'fs'
 
-class MyReporter implements Reporter {
-  private suiteStartTime:number = 0
-  private suiteEndTime:number = 0
-  private json:any = {}
-  onBegin(config: FullConfig, suite: Suite) {
-    //suite.titlePath
-    //console.log(`Starting the run with ${suite.allTests().length} tests`);
-  }
 
-  onTestBegin(test: TestCase, result: TestResult) {
-    //console.log(`Starting test ${test.title}`);
+const ymd = (s: Date) => s.toLocaleDateString('sv-SE')
+const his = (s: Date) => s.toTimeString().slice(0, 8)
+const getStatus = (s: string):string => {
+  const statusTbl: any = {
+    passed: 'active',
+    skipped: 'done',
+    failed: 'crit',
+    timedOut: 'crit',
   }
+  const ret = statusTbl[s]
+  return ret ? ret : s
+}
 
+type OutputAllTestResult = {
+  [key: string]: OutputTestResult[]
+}
+
+type OutputTestResult = {
+  section: string
+  suiteName: string
+  testName: string
+  startTime: Date
+  endTime: Date
+  status: string
+  duration: number
+  retry: number
+}
+
+type TestOptions = {
+  outputFile?: string
+  header?: string
+  footer?: string
+}
+
+class MarkdownTimelineReporter implements Reporter {
+  private options:TestOptions = {}
+  private suiteStartTime: number = 0
+  private suiteEndTime: number = 0
+  private testResults: OutputAllTestResult = {}
+  constructor(options: TestOptions) {
+    this.options = options ? options : {}
+  }
 
   onTestEnd(test: TestCase, result: TestResult) {
     const startTime = result.startTime
     const duration = result.duration
     const endTime = new Date(startTime.getTime() + result.duration)
     const titlePath = test.titlePath()
+
     const retry = result.retry
     const status = result.status
-    const testName = titlePath.pop()
-    const suiteName = titlePath.pop()
-    const section = titlePath.join(' > ')
+    const projectName = [titlePath.shift(), titlePath.shift()].join('')
+    const testFileName = titlePath.shift()
+    const testName = `${titlePath.pop()}`
+    const suiteName = 0 === titlePath.length ? '>' : `${titlePath.join(' > ')}`
+    const section = '' === projectName ? `${testFileName}` : `[${projectName}] ${testFileName}`
 
     this.suiteStartTime = 0 == this.suiteStartTime ? startTime.getTime() : Math.min(this.suiteStartTime, startTime.getTime())
     this.suiteEndTime = Math.max(this.suiteEndTime, endTime.getTime())
-    if(!this.json[section]) {
-      this.json[section] = {}
+    if (!this.testResults[section]) {
+      this.testResults[section] = []
     }
-    if(!this.json[section][suiteName]) {
-      this.json[section][suiteName] = []
-    }
-    this.json[section][suiteName].push({
+    this.testResults[section].push({
       section, suiteName, testName, startTime, endTime, status, duration, retry
     })
   }
 
   onEnd(result: FullResult) {
-    const statusTbl = {
-      passed: 'active',
-      skipped: 'done',
-      failed: 'crit', 
-    }
     const msec1min = 60 * 1000
     const lines = []
-    lines.push('## Test Timeline')
-    lines.push('')
+    if(this.options.header) {
+      lines.push(this.options.header)
+      lines.push('')
+    }
     const tz = new Date().getTimezoneOffset()
     const offset = this.suiteStartTime - tz * msec1min
     const suiteEndMsec = (this.suiteEndTime - this.suiteStartTime) % msec1min
     const roundedUp = 30 * 1000 <= suiteEndMsec ? msec1min - suiteEndMsec : 0
     const suiteStartTime = new Date(this.suiteStartTime - offset)
     const suiteEndTime = new Date(this.suiteEndTime - offset + roundedUp)
-    const startLabel = dateLabel(new Date(this.suiteStartTime))
-    const endLabel = dateLabel(new Date(this.suiteEndTime))
-    for(const section in this.json) {
-      const suites = this.json[section]
+
+    for (const section in this.testResults) {
+      const tests = this.testResults[section]
       lines.push('```mermaid')
       lines.push('gantt')
       lines.push(`  title ${section}`)
@@ -68,45 +95,39 @@ class MyReporter implements Reporter {
       lines.push('  axisFormat  %H:%M')
       lines.push('  tickInterval 1minute')
       lines.push('')
-      for(const suite in suites) {
-        const tests = suites[suite]
-        lines.push(`  section Describe`)
-        lines.push(`    "${suite}" : milestone, ${his(suiteStartTime)}, 1min`)
-        const retries = [...Array(1 + Math.max(...tests.map(t => t.retry)))].map((_, i) => i)
-        retries.forEach( retry => {
-          if(0===retry) {
-            lines.push(`  section Run`)
-          } else {
-            lines.push(`  section Retry ${retry}`)
-          }
-          tests.filter(t => retry === t.retry).forEach(({testName, startTime, endTime, status, duration}) => {
+      const retries = [...Array(1 + Math.max(...tests.map(t => t.retry)))].map((_, i) => i)
+      retries.forEach(retry => {
+        if (0 === retry) {
+          lines.push(`  section Run`)
+        } else {
+          lines.push(`  section Retry ${retry}`)
+        }
+
+        const filteredTests = tests.filter(t => retry === t.retry)
+        const suiteNames = filteredTests.map(t => t.suiteName)
+        for(const suiteName of [...new Set(suiteNames)]) {
+          lines.push(`    ${suiteName.replace(/[#:]/g,' ')} : milestone, ${his(suiteStartTime)}, 0s`)
+          filteredTests.filter(test => suiteName === test.suiteName).forEach(({testName, status, startTime, duration}) => {
             const stt = new Date(startTime.getTime() - offset)
-            lines.push(`    "${testName}": ${statusTbl[status]}, ${his(stt)}, ${duration / 1000}s`)
+            lines.push(`    ${testName.replace(/[#:]/g,' ')}: ${getStatus(status)}, ${his(stt)}, ${duration / 1000}s`)              
           })
-        })
-      }
-      lines.push(`  section End`)
-      lines.push(`    E : milestone, ${his(suiteEndTime)}, 1min`)
+        }
+      })
+      lines.push(`    End : milestone, ${his(suiteEndTime)}, 0s`)
       lines.push('```')
       lines.push('')
     }
-    const fpath = 'test-result.md'
-    fs.writeFileSync(fpath, lines.join('\n'))
-    //console.log(`Finished the run: ${result.status}`);
+    if(this.options.footer) {
+      lines.push(this.options.footer)
+    }
+    if(this.options.outputFile) {
+      const outputFile = this.options.outputFile
+      fs.writeFileSync(outputFile, lines.join('\n'))
+    } else {
+      console.log(lines.join('\n'))
+    }
   }
 }
 
-export default MyReporter;
+export default MarkdownTimelineReporter;
 
-const ymd = (s) => s.toLocaleDateString('sv-SE')
-const his = (s) => s.toTimeString().slice(0, 8)
-const dateLabel = (s) => s.toLocaleDateString('sv-SE') + ' ' + s.toTimeString().slice(0, 8).replace(/\:/g,'_')
-
-function getDuration(startTime, endTime) {
-  const ms = endTime.getTime() - startTime.getTime()
-  const dms = ms % 1000
-  const sec = (ms - dms)/ 1000
-  const ds = sec % 60
-  const dm = (sec - ds) / 60
-  return `${dm}m ${ds}s`
-}
