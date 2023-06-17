@@ -77,4 +77,4 @@ gantt
 
 ## License
 
-The playwright-markdown-timeline-reporter project is under the MIT License. For more details, refer to the [LICENSE](/LICENSE.md) file.
+The playwright-markdown-timeline-reporter project is under the MIT License. For more details, refer to the [LICENSE](LICENSE.md) file.
