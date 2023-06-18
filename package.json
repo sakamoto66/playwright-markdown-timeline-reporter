@@ -1,5 +1,5 @@
 {
-  "name": "playwright-markdown-timeline-reporter",
+  "name": "@sakamoto66/playwright-markdown-timeline-reporter",
   "version": "0.1.0",
   "description": "Generate Markdown Gantt charts for test results obtained using Playwright. Simplify visualization and understanding of test timelines.",
   "repository": {
