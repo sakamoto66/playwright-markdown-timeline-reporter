@@ -1,6 +1,7 @@
 {
-  "name": "playwright-markdown-timeline-reporter",
-  "version": "1.0.0",
+  "name": "@sakamoto66/playwright-markdown-timeline-reporter",
+  "version": "0.1.0",
+  "private": false,
   "description": "Generate Markdown Gantt charts for test results obtained using Playwright. Simplify visualization and understanding of test timelines.",
   "repository": {
     "type": "git",
@@ -14,8 +15,7 @@
   "scripts": {
     "build": "tsc",
     "prepublishOnly": "npm run build",
-    "test": "jest",
-    "bin": "node dist/cli.js"
+    "test": "jest"
   },
   "keywords": [
     "playwright",
@@ -24,7 +24,7 @@
     "timeline",
     "mermaid"
   ],
-  "author": "Koichi Sakamoto",
+  "author": "sakamoto66",
   "license": "MIT",
   "devDependencies": {
     "@types/jest": "^29.5.2",
