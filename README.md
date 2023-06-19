@@ -13,18 +13,19 @@ The playwright-markdown-timeline-reporter is a powerful library designed to conv
 1. Install the playwright-markdown-timeline-reporter library:
 
 ```shell
-npm i -D playwright-markdown-timeline-reporter
+npm i -D @sakamoto66/playwright-markdown-timeline-reporter
 ```
 
 2. To use a reporter define it in playwright.config.ts as reporter:
 
 - playwright.config.ts
+
 ```typescript
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   reporter: [
-    [ 'playwright-markdown-timeline-reporter', { outputFile: 'timeline.md', header:'## Timeline', footer:'footer comment' } ]
+    [ '@sakamoto66/playwright-markdown-timeline-reporter', { outputFile: 'timeline.md', header:'## Timeline', footer:'footer comment' } ]
   ],
 })
 ```
