@@ -1,5 +1,6 @@
 import { FullConfig, FullResult, Reporter, Suite, TestCase, TestResult } from '@playwright/test/reporter';
-import * as fs from 'fs'
+import * as fs from 'fs';
+import { markdown2html } from './markdown2html';
 
 const his = (s: Date) => s.toTimeString().slice(0, 8)
 const getStatus = (s: string):string => {
@@ -42,63 +43,6 @@ type WokerTime = {
   time: number
   count: number
 }
-/*const vegaline = {
-  $schema: "https://vega.github.io/schema/vega/v5.json",
-  width: 400,
-  height: 200,
-  padding: 50,
-
-  data: [],
-
-  scales: [
-    {
-      name: "x",
-      type: "time",
-      range: "width",
-      domain: {data: "table", field: "time"}
-    },
-    {
-      name: "y",
-      type: "linear",
-      range: "height",
-      nice: true,
-      zero: true,
-      domain: {data: "table", field: "count"}
-    }
-  ],
-
-  axes: [
-    {
-      orient: "bottom",
-      scale: "x",
-      format: "%H:%M:%S",
-      labelOverlap: "parity",
-      title:"Time"
-    },
-    {
-      orient: "left",
-      scale: "y",
-      tickCount: 4,
-      format: "d",
-      title:"Worker Count"
-    }
-  ],
-
-  marks: [
-    {
-      type: "line",
-      from: {data: "table"},
-      encode: {
-        enter: {
-          x: {scale: "x", field: "time"},
-          y: {scale: "y", field: "count"},
-          stroke: {value: "steelblue"},
-          strokeWidth: {value: 2}
-        }
-      }
-    }
-  ]
-}*/
 
 const vegaline = {
   $schema: "https://vega.github.io/schema/vega-lite/v4.json",
@@ -129,6 +73,7 @@ const vegaline = {
     }
   }
 }
+
 class MarkdownTimelineReporter implements Reporter {
   private options:TestOptions = {workerGraphWidth:600}
   private suiteStartTime: number = 0
@@ -245,11 +190,18 @@ class MarkdownTimelineReporter implements Reporter {
     if(this.options.footer) {
       lines.push(this.options.footer)
     }
+    const markdown = lines.join('\n')
     if(this.options.outputFile) {
       const outputFile = this.options.outputFile
-      fs.writeFileSync(outputFile, lines.join('\n'))
+      if(/\.html?$/.test(outputFile)) {
+        const title = outputFile.replace(/.*[\/\\]/, '').replace(/\..*$/, '')
+        markdown2html(markdown, title).then( html => fs.writeFileSync(outputFile, html))
+      } else {
+        fs.writeFileSync(outputFile, markdown)
+      }
+      
     } else {
-      console.log(lines.join('\n'))
+      console.log(markdown)
     }
   }
 }
