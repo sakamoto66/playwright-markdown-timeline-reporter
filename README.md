@@ -33,131 +33,14 @@ export default defineConfig({
 
 | Option           | Required | Description                                                     |
 |------------------|----------|-----------------------------------------------------------------|
-| outputFile       | Optional | Specifies the output file. If omitted, results are output to standard out. |
+| outputFile       | Optional | Specifies the output file. If omitted, results are output to standard out. If the file extension is .html, the content will be output as HTML. Otherwise, it will be output as Markdown. |
 | header           | Optional | Adds a custom message at the beginning of the output content.   |
 | footer           | Optional | Adds a custom message at the end of the output content.         |
 | workerGraphWidth | Optional | Specifies the width of the parallel graph. The default value is 600.|
 
 ### Output Example
 
-```vega-lite
-{
-  "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-  "description": "A simple line chart with embedded data.",
-  "width": 600,
-  "data": {
-    "values": [
-      {
-        "time": "1969-12-31T15:00:00.000Z",
-        "count": 2
-      },
-      {
-        "time": "1969-12-31T15:00:33.238Z",
-        "count": 1
-      },
-      {
-        "time": "1969-12-31T15:00:35.185Z",
-        "count": 0
-      },
-      {
-        "time": "1969-12-31T15:00:36.070Z",
-        "count": 1
-      },
-      {
-        "time": "1969-12-31T15:00:37.918Z",
-        "count": 2
-      },
-      {
-        "time": "1969-12-31T15:01:10.626Z",
-        "count": 2
-      },
-      {
-        "time": "1969-12-31T15:01:11.218Z",
-        "count": 2
-      },
-      {
-        "time": "1969-12-31T15:01:27.863Z",
-        "count": 1
-      },
-      {
-        "time": "1969-12-31T15:01:28.372Z",
-        "count": 0
-      },
-      {
-        "time": "1969-12-31T15:01:30.622Z",
-        "count": 1
-      },
-      {
-        "time": "1969-12-31T15:01:31.560Z",
-        "count": 2
-      },
-      {
-        "time": "1969-12-31T15:01:53.299Z",
-        "count": 1
-      },
-      {
-        "time": "1969-12-31T15:01:55.300Z",
-        "count": 0
-      }
-    ]
-  },
-  "mark": "line",
-  "encoding": {
-    "x": {
-      "field": "time",
-      "type": "temporal",
-      "title": "Time",
-      "axis": {
-        "format": "%H:%M:%S"
-      }
-    },
-    "y": {
-      "field": "count",
-      "type": "quantitative",
-      "title": "Worker Count",
-      "axis": {
-        "tickMinStep": 1
-      }
-    }
-  }
-}
-```
-
-```mermaid
-gantt
-  title [webkit] example.spec.ts
-
-  todayMarker off
-  dateFormat  HH:mm:ss
-  axisFormat  %H:%M
-  tickInterval 1minute
-
-  section Run
-    Example Test : milestone, 00:00:00, 0s
-    has title: active, 00:00:00, 33.221s
-    get started link: active, 00:00:36, 35.148s
-    error test case: crit, 00:01:11, 17.151s
-    skip test case: done, 00:01:31, 23.74s
-    End : milestone, 00:02:00, 0s
-```
-
-```mermaid
-gantt
-  title [chromium] example.spec.ts
-
-  todayMarker off
-  dateFormat  HH:mm:ss
-  axisFormat  %H:%M
-  tickInterval 1minute
-
-  section Run
-    Example Test : milestone, 00:00:00, 0s
-    has title: active, 00:00:00, 35.185s
-    get started link: active, 00:00:37, 32.708s
-    error test case: crit, 00:01:10, 17.235s
-    skip test case: done, 00:01:30, 22.677s
-    End : milestone, 00:02:00, 0s
-```
+![Output Image](doc/image/output_example.png)
 
 ## License
 

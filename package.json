@@ -1,6 +1,6 @@
 {
   "name": "@sakamoto66/playwright-markdown-timeline-reporter",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": false,
   "description": "Generate Markdown Gantt charts for test results obtained using Playwright. Simplify visualization and understanding of test timelines.",
   "repository": {
@@ -34,6 +34,12 @@
     "typescript": "^5.1.3"
   },
   "dependencies": {
-    "@playwright/test": "^1.35.1"
+    "@playwright/test": "^1.35.1",
+    "@types/marked": "^5.0.0",
+    "marked": "^5.1.0",
+    "marked-gfm-heading-id": "^3.0.4",
+    "mermaid": "^10.2.3",
+    "vega": "^5.25.0",
+    "vega-lite": "^5.9.3"
   }
 }
