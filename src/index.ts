@@ -1,5 +1,6 @@
 import { FullConfig, FullResult, Reporter, Suite, TestCase, TestResult } from '@playwright/test/reporter';
 import * as fs from 'fs';
+import * as path from 'path';
 import { markdown2html } from './markdown2html';
 
 const his = (s: Date) => s.toTimeString().slice(0, 8)
@@ -193,6 +194,9 @@ class MarkdownTimelineReporter implements Reporter {
     const markdown = lines.join('\n')
     if(this.options.outputFile) {
       const outputFile = this.options.outputFile
+      if(!fs.existsSync(path.dirname(outputFile))) {
+        fs.mkdirSync(path.dirname(outputFile), {recursive:true})
+      }
       if(/\.html?$/.test(outputFile)) {
         const title = outputFile.replace(/.*[\/\\]/, '').replace(/\..*$/, '')
         markdown2html(markdown, title).then( html => fs.writeFileSync(outputFile, html))
